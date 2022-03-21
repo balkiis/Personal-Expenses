@@ -1,0 +1,12 @@
+require('./expenses')
+const express = require('express')
+const router = express.Router()
+router.route('/', auth)
+    .post(expensessController.getExpensess)
+router.route('/changeExpensess')
+    .get(expensessController.editExpensess)
+router.route('/FilterByUser')
+    .get(expensessController.FilterByUser)
+router.route('/FilterByCategory')
+    .get(expensessController.FilterBycategory)
+module.exports = router
