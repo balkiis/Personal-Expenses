@@ -1,5 +1,5 @@
 //CONNECT TO DATABASE
-require('../models/connectDB')
+require('../models/connectToDB')
 const Currency = require('../models/Currency')
 const Expenses = require('../models/expenses')
 const { uploadPhoto, deletePhoto } = require('../utils/uploadFile')
@@ -61,7 +61,7 @@ exports.editCurrency = async (req, res) => {
   if (req.user === undefined) {
     res.status(404).json({ message: "You do not have the authority" })
   }
-  req.body.convert = JSON.parse(req.body.convert)
+  req.body.convert = JSON.parse(body.convert)
   req.body.convert.map((convert) => { ObjectId(convert.currencyId) })
   const currencyId = req.params.id;
   const editedCurrency = {
@@ -69,6 +69,7 @@ exports.editCurrency = async (req, res) => {
     amount: req.body.amount,
     convert: req.body.convert,
   }
+
   try {
     const updateCurrency = await Currency.findByIdAndUpdate({ _id: currencyId }, editedCurrency);
     res.json(updateCurrency);
@@ -76,3 +77,5 @@ exports.editCurrency = async (req, res) => {
     res.status(400).json({ message: error })
   }
 }
+
+

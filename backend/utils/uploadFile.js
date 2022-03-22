@@ -1,6 +1,5 @@
 const multer = require('multer')
 const { v4: uuidv4 } = require('uuid')
-const { response } = require('../app')
 const logger = require('./logger')
 const fs = require('fs')
 const path = require('path')

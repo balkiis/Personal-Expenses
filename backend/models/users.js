@@ -1,3 +1,4 @@
+const { number } = require('@hapi/joi')
 const mongoose = require('mongoose')
 const userSchema = new mongoose.Schema({
     fName: {
@@ -31,7 +32,24 @@ const userSchema = new mongoose.Schema({
     userType: {
         type: Number,
         required: true
-    }
+    },
+    salary: [{
+        amount: [{
+            currencyId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Currency"
+            },
+            amount: {
+                type: Number
+            }
+        }],
+        month: {
+            type: Number
+        },
+        year: {
+            type: Number
+        }
+    }]
 })
 userSchema.set('toJSON', {
     transform: (document, returnedObject) => {
