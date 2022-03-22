@@ -13,24 +13,34 @@ const getExpensessUser = async (req, res) => {
         let categoryExist = req.query.categoryExist
         let currencyExist = req.query.currencyExist
         const filedOrder = req.query.filedOrder
-
+        let dayDate = String.empty
         if (dateType === "day") {
-            let dayDate = req.body.dayDate
-            const expenses = await Expenses
-                .find({ userId: req.user.id, categoryId: categoryId, date: dayDate })
-                .populate({ path: 'userId', model: 'User' })
-                .populate({ path: 'categoryId', model: 'Category' })
-                .populate({ path: 'currency.currencyId', model: 'Currency' })
-                .sort({ [filedOrder]: order })
-            res.status(201).json({ expenses })
-        }
+            dayDate = req.body.dayDate
 
+        }
+        const expenses = await Expenses
+            .find({ userId: req.user.id, category, date: dayDate })
+            .populate({ path: 'userId', model: 'User' })
+            .populate({ path: 'categoryId', model: 'Category' })
+            .populate({ path: 'currency.currencyId', model: 'Currency' })
+            .sort({ [filedOrder]: order })
+        res.status(201).json({ expenses })
         let order = 1
         if (req.query.order === "desc")
             order = -1
 
 
-
+        const days = daysInMonth(month, year)
+        let date1 = year + '-' + month + '-' + '01'
+        date1 = new Date(date1).toISOString().substring(0, 10)
+        let date2 = year + '-' + month + '-' + days
+        date2 = new Date(date2).toISOString().substring(0, 10)
+        const events = await Event.find({
+            'deleted.status': false,
+            startDate: { $gte: date1, $lte: date2 }
+        }).limit(nbLimit)
+            .populate({ path: 'subscribers', model: 'Subscriber' })
+            .sort({ $natural: -1 })
 
 
 
