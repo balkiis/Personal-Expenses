@@ -96,6 +96,7 @@ const savePicture = async (req, res) => {
 }
 
 //Add SALARY USER
+
 addSalary = async (req, res) => {
     if (req.user === undefined) {
         res.status(404).json({ message: "You do not have the authority" })

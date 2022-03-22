@@ -33,6 +33,7 @@ const userSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+
     salary: [{
         amount: [{
             currencyId: {
@@ -48,6 +49,7 @@ const userSchema = new mongoose.Schema({
         },
         year: {
             type: Number
+
         }
     }]
 })
