@@ -1,5 +1,5 @@
 //CONNECT TO DATABASE
-require('../models/connectDB')
+require('../models/connectToDB')
 const Currency = require('../models/Currency')
 const Expenses = require('../models/expenses')
 const { uploadPhoto, deletePhoto } = require('../utils/uploadFile')

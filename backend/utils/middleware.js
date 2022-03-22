@@ -1,6 +1,6 @@
 const logger = require('./logger')
 const jwt = require('jsonwebtoken')
-const User = require('../Models/user')
+const User = require('../models/users')
 const requestLogger = (request, response, next) => {
     logger.info('----------Request Logger----------')
     logger.info('Method: ', request.method)
@@ -25,4 +25,4 @@ const userExtractor = async (request, response, next) => {
 const unknownEndpoint = (request, response) => {
     return response.status(404).send({ error: '404 - Not Found: Unknown End Point' })
 }
-module.exports = { requestLogger, unknownEndpoint, errorHandler, userExtractor }
+module.exports = { requestLogger, unknownEndpoint, userExtractor }

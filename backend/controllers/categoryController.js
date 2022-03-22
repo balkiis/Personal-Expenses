@@ -1,5 +1,5 @@
 //CONNECT TO DATABASE
-require('../models/connectDB')
+require('../models/connectToDB')
 const Category = require('../models/category')
 const Expenses = require('../models/expenses')
 //GET ALL CATEGORIES (ADMIN)

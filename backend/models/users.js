@@ -33,23 +33,23 @@ const userSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    salary:[{
+
+    salary: [{
+        amount: [{
             currencyId: {
-                type: mongoose.Schema.Type.ObjectId,
-                ref: "Currency",
-                require: true
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Currency"
             },
-            month:{
-                type:Number,
-                required: true
-            },
-            year:{
-                type: Number,
-                required: true,
-            },
-            ammount: {
-                type: Number,
-                require: true
+            amount: {
+                type: Number
+            }
+        }],
+        month: {
+            type: Number
+        },
+        year: {
+            type: Number
+
         }
     }]
 })

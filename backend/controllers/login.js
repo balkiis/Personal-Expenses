@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
-const User = require('../Models/user')
+const User = require('../models/users')
 const { userValidationUsername, userValidationEmail, userValidationPassword } = require('../Utils/validate')
 const logger = require('../Utils/logger')
 const userLogin = async (request, response) => {
@@ -31,7 +31,7 @@ const userLogin = async (request, response) => {
     logger.info("userForToken", userForToken)
     const token = jwt.sign(userForToken, process.env.SECRET, { expiresIn: '1h' })
     logger.info("token", token)
-    response.status(201).json({ token: token })
+    response.status(201).json({ token: token, userType: user.userType })
 }
 const checkIfStillLogin = async (request, response, next) => {
     console.log("request.user", request.user)

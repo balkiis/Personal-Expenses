@@ -1,11 +1,10 @@
 const logger = require('../utils/logger')
 require('../models/connectToDB')
-const User = require('../models/user')
+const User = require('../models/users')
 const { ObjectId } = require('mongodb')
 const { photoValidation, userValidationData, userValidationOtherData, userValidationEmail, userValidationUsername, userValidationPassword } = require('../utils/validate')
 const logout = require('./login')
 const bcrypt = require('bcrypt')
-const { photoValidation } = require('../utils/validate')
 const { uploadPhoto } = require('../utils/uploadFile')
 const { array } = require('@hapi/joi')
 const getUsers = async (request, response) => {
@@ -97,56 +96,96 @@ const savePicture = async (req, res) => {
 }
 
 //Add SALARY USER
-exports.addSalary = async (req, res) => {
-    if (req.user === undefined){
-    res.status(404).json({ message: "You do not have the authority" })
-  } 
-  body.req.currencyId = ObjectId(body.req.currencyId) 
-  const currencyId = req.params.id;
-  const  addSalary = {
-    currencyId: req.body.currencyId,
-    month: req.body.month,
-    year: req.body.year,
-    ammount: req.body.ammount
-  }
-  const findUser = await User.findById({ _id: req.user.id })
-  addSalary.push(findCurrency)
-  console("findUser")
-  try {
-    const newSalary = await User.findByIdAndUpdate({ _id: userId }, findUser)
-    res.json(addSalary.ammount);
-} catch (error) {
-    res.status(404).json({ message: error })
+
+addSalary = async (req, res) => {
+    if (req.user === undefined) {
+        res.status(404).json({ message: "You do not have the authority" })
+    }
+    req.body.currencyId = ObjectId(req.body.currencyId)
+    const findUser = await User.findById({ _id: req.user.id })
+    const getCurrencies = await Currency.findById({})
+    console.log("getCurrencies", getCurrencies)
+    let allAmount = []
+    for (let i = 0; i < getCurrencies.length; i++) {
+        if (getCurrencies[i]._id !== req.body.currencyId) {
+            let convert = convert.amount
+            let convertedAmount = req.body.amount * convert
+            allAmount.push({
+                currencyId: getCurrencies[i].currencyId,
+                amount: convertedAmount
+            })
+            console.log("allAmount " + i, allAmount)
+        }
+    }
+    let newAmount = {
+        currencyId: req.body.currencyId,
+        amount: req.body.amount,
+    }
+    console.log("newAmount", newAmount)
+    allAmount.push(newAmount)
+    console.log("allAmount final", allAmount)
+    const addSalary = {
+        amount: allAmount,
+        month: req.body.month,
+        year: req.body.year
+    }
+    findUser.push(addSalary)
+    console("findUser", findUser)
+    try {
+        const editedUser = await User.findByIdAndUpdate({ _id: userId }, findUser)
+        console("editedUser", editedUser)
+        res.json(addSalary);
+    } catch (error) {
+        res.status(404).json({ message: error })
+    }
 }
-  }
 
-  //Edit SALARY USER
-exports.editSalary = async (req, res) => {
-    if (req.user === undefined){
-    res.status(404).json({ message: "You do not have the authority" })
-  } 
-  body.req.currencyId = ObjectId(body.req.currencyId) 
-  const currencyId = req.params.id;
-  const  editSalary = {
-    currencyId: req.body.currencyId,
-    month: req.body.month,
-    year: req.body.year,
-    ammount: req.body.ammount
-  }
-  const findUser = await User.find({ _id: req.user.id, month: req.body.month , year: req.body.year})
-  for (let i=0; i<= findUser.lenght(); i++){
-      if ((findUser[i].month=== req.body.month) && (findUser[i].year=== req.body.year)){
-            findUser.ammount = req.body.ammount 
-      }
-  }
+//Edit SALARY USER
+editSalary = async (req, res) => {
+    if (req.user === undefined) {
+        res.status(404).json({ message: "You do not have the authority" })
+    }
+    req.body.currencyId = ObjectId(req.body.currencyId)
+    let editedAmount = {
+        currencyId: req.body.currencyId,
+        amount: req.body.ammount,
+    }
+    let allAmount = []
+    for (let i = 0; i < getCurrencies.length; i++) {
+        if (getCurrencies[i]._id !== req.body.currencyId) {
+            let convert = convert.amount
+            let convertedAmount = req.body.amount * convert
+            allAmount.push({
+                currencyId: getCurrencies[i].currencyId,
+                amount: convertedAmount
+            })
+            console.log("allAmount " + i, allAmount)
+        }
+        else {
+            allAmount.push(newAmount)
+        }
+    }
+    console.log("allAmount", allAmount)
+    const editSalary = {
+        amount: allAmount,
+        month: req.body.month,
+        year: req.body.year
+    }
+    console.log("editSalary", editSalary)
+    const findUser = await User.find({ _id: req.user.id, month: editSalary.month, year: editSalary.year })
+    for (let i = 0; i <= findUser.lenght(); i++) {
+        if ((findUser[i].month === editSalary.month) && (findUser[i].year === editSalary.year)) {
+            findUser.amount = editSalary
+        }
+    }
 
-  console("findUser")
-  try {
-    const newSalary = await User.findByIdAndUpdate({ _id: userId }, findUser)
-    res.json(addSalary.ammount);
-} catch (error) {
-    res.status(404).json({ message: error })
+    console("findUser")
+    try {
+        const editedUser = await User.findByIdAndUpdate({ _id: userId }, findUser)
+        res.json(editSalary);
+    } catch (error) {
+        res.status(404).json({ message: error })
+    }
 }
-  }
 
-module.exports = { getUsers, setUser, editUserData, editUserEmail, editUserUsername, editUserPassword, deleteUser, uploadProfile, savePicture }
+module.exports = { addSalary, editSalary, getUsers, setUser, editUserData, uploadProfile, savePicture }
