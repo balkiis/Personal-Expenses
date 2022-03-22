@@ -7,6 +7,7 @@ const logout = require('./login')
 const bcrypt = require('bcrypt')
 const { photoValidation } = require('../utils/validate')
 const { uploadPhoto } = require('../utils/uploadFile')
+const { array } = require('@hapi/joi')
 const getUsers = async (request, response) => {
     const users = await User.find({})
     response.status(201).json({ data: users })
@@ -24,7 +25,10 @@ const setUser = async (request, response) => {
         return response.status(401).json({ error: 'Username already exist' })
     const url = req.protocol + '://' + req.get('host')
     const saltRounds = 10
-    const passwordHash = await bcrypt.hash(body.password, saltRounds)
+    const passwordHash = await bcrypt.hash(body.salary, saltRounds)
+
+    body.salary = JSON.parse(body.salary)
+    body.salary.map((convert) => { ObjectId(body.salary.currencyId) })
     const newUser = new User({
         fName: body.fName,
         lName: body.lName,
@@ -32,7 +36,8 @@ const setUser = async (request, response) => {
         email: body.email,
         password: passwordHash,
         photo: url + '/public/avatar.png',
-        userType: body.userType
+        userType: body.userType,
+        salary: body.salary
     })
     if (req.file) {
         if (req.file.fieldname !== "photo")
@@ -54,6 +59,7 @@ const editUserData = async (request, response) => {
     const validate = userValidationOtherData(body)
     if (validate.error)
         res.status(404).json({ name: "ValidationError", message: validate.error.message })
+
     const editedUser = {
         fName: body.fName,
         lName: body.lName
@@ -89,4 +95,58 @@ const savePicture = async (req, res) => {
         res.status(404).json({ message: error })
     }
 }
+
+//Add SALARY USER
+exports.addSalary = async (req, res) => {
+    if (req.user === undefined){
+    res.status(404).json({ message: "You do not have the authority" })
+  } 
+  body.req.currencyId = ObjectId(body.req.currencyId) 
+  const currencyId = req.params.id;
+  const  addSalary = {
+    currencyId: req.body.currencyId,
+    month: req.body.month,
+    year: req.body.year,
+    ammount: req.body.ammount
+  }
+  const findUser = await User.findById({ _id: req.user.id })
+  addSalary.push(findCurrency)
+  console("findUser")
+  try {
+    const newSalary = await User.findByIdAndUpdate({ _id: userId }, findUser)
+    res.json(addSalary.ammount);
+} catch (error) {
+    res.status(404).json({ message: error })
+}
+  }
+
+  //Edit SALARY USER
+exports.editSalary = async (req, res) => {
+    if (req.user === undefined){
+    res.status(404).json({ message: "You do not have the authority" })
+  } 
+  body.req.currencyId = ObjectId(body.req.currencyId) 
+  const currencyId = req.params.id;
+  const  editSalary = {
+    currencyId: req.body.currencyId,
+    month: req.body.month,
+    year: req.body.year,
+    ammount: req.body.ammount
+  }
+  const findUser = await User.find({ _id: req.user.id, month: req.body.month , year: req.body.year})
+  for (let i=0; i<= findUser.lenght(); i++){
+      if ((findUser[i].month=== req.body.month) && (findUser[i].year=== req.body.year)){
+            findUser.ammount = req.body.ammount 
+      }
+  }
+
+  console("findUser")
+  try {
+    const newSalary = await User.findByIdAndUpdate({ _id: userId }, findUser)
+    res.json(addSalary.ammount);
+} catch (error) {
+    res.status(404).json({ message: error })
+}
+  }
+
 module.exports = { getUsers, setUser, editUserData, editUserEmail, editUserUsername, editUserPassword, deleteUser, uploadProfile, savePicture }
